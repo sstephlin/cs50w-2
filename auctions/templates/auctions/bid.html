@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if message_error %}
+        <div class="alert alert-danger" role="alert">
+            Your bid must be higher than the current price.
+        </div>
+        <div>
+            <a class="btn btn-outline-primary" href="{% url 'listing' listing_title=listing_title %}" role="button">Return to Listing</a>
+        </div>
+
+    {% elif message_succes %}
+        <div class="alert alert-success" role="alert">
+            Your bid was successfully placed!
+        </div>
+        <div>
+            <a class="btn btn-outline-primary" href="{% url 'index' %}" role="button">Return to All Listings</a>
+        </div>
+    {% endif%}
+        
+{% endblock %}

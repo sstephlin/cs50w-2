@@ -1,0 +1,90 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <!-- display bidding message if any -->
+    <!-- {% if message is "error" %}
+        <div class="alert alert-danger" role="alert">
+            Your bid must be higher than the current price.
+        </div>
+    {% elif message is "success" %}
+        <div class="alert alert-success" role="alert">
+            Your bid was successfully placed!
+        </div>
+    {% endif%} -->
+    <!-- if listing is active -->
+    {% if curr_listing.active %}
+        <div style="display: flex;">
+            {% if curr_listing.image_url != "no url" %}
+                <div style="margin: 10px; margin-right: 30px;">
+                        <img src="{{ curr_listing.image_url}}" alt="Image of {{curr_listing.title}}" width="200" height="250">
+                </div>
+            {% endif %}
+            <div style="margin:10px">
+                <h3>{{curr_listing.title}}</h3>
+                <h4 style="font-weight: 400;">${{curr_listing.price.bid}}</h4>
+                <h6>{{curr_listing.description}}</h6>
+                <h6>Category: {{curr_listing.category}}</h6>            
+        
+                <div>
+                    <!-- if user is signed in -->
+                    {% if curr_user.is_authenticated %} 
+                        <!-- if this listing is not posted by curr_user -->
+                        {% if curr_user != curr_listing.owner %}
+                            {% if inWatchlist is True %}
+                                <!-- remove from watchlist button -->
+                                <form action="{% url 'remove_watchlist'  listing_id=curr_listing.id%}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger">Remove from Watchlist</button>
+                                </form>
+                                <!-- if listing is not on user's watchlist -->
+                            {% else %}
+                                <!-- add to watchlist button -->
+                                <form action="{% url 'add_watchlist'  listing_id=curr_listing.id%}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success">Add to Watchlist</button>
+                                </form>
+                            {% endif%}
+                        <!-- if listing is posted by curr_user -->
+                        {% else %}
+                            <!-- close listing button -->                        
+                            <button type="button" class="btn btn-outline-danger">Close Listing</button>    
+                        {% endif%}
+                        <!-- place bid option, amount must be greater than curr price -->
+                        <form action="{% url 'place_bid' listing_id=curr_listing.id %}" style="margin-top: 10px;" method="POST">
+                            {% csrf_token %}
+                            <input type="float" name = "bid" required>
+                            <button type="submit" class="btn btn-primary">Place Bid</button>
+                        </form>
+                        <form action="{% url 'post_comment' listing_id=curr_listing.id %}" style="margin-top: 10px;" method="POST">
+                            {% csrf_token %}
+                            <textarea type="text" name = "message" class="form-control" style="height: 150px;"></textarea>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px">Post Comment</button>
+                        </form>
+                    {% endif%}
+                </div>
+            </div>
+        </div>
+        <!-- display all comments -->
+        <div>
+            <hr>
+            <h3>Comments</h3>
+            {% for comment in comments %}
+                <li class="list-group-item">
+                    <div style="display: flex;">
+                        <div style="margin:10px">
+                            <h3>{{comment.commentor}}</h3>
+                            <p>{{comment.message}}</p>
+                
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </div>
+        
+    <!-- {% else %} -->
+    <!-- else 
+                if curr user is the winner, display message 
+                else return message listing closed-->
+        <!-- <h1>closed</h1> -->
+    {% endif%}
+{% endblock %}
